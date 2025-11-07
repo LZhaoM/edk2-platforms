@@ -38,30 +38,53 @@ TypecPhyTimerCallback (
 
   TypcPhyIdx = PhyInfo->PhyControlIndex;
 
-  DEBUG ((
+  DebugPrint (
     DEBUG_INFO,
     "\n\n[Typec phy %d timer callback enter]\n",
     TypcPhyIdx
-    ));
+    );
 
-  if (PortState.Mode == TYPEC_STATE_USB ||
-      PortState.Mode == TYPEC_DP_STATE_D) {
-    Status = TypecPhy->U3phyInit (TypecPhy);
+  if (PortState.Mode == TYPEC_DP_STATE_E) {
+    Status = TypecPhy->DpPhyPowerOff (TypecPhy);
+    DebugPrint (DEBUG_INFO, "DpPhyPowerOff!!!\n");
     if (EFI_ERROR (Status)) {
       DebugPrint (
         DEBUG_ERROR,
-        "%a: Typec phy %d, U3 Phy Init %r\n",
+        "%a: Typec phy %d, DP Phy Power Off %r\n",
+        __FUNCTION__,
+        TypcPhyIdx,
+        Status
+        );
+    }
+    Status = TypecPhy->DpPhyPowerOn (TypecPhy);
+    DebugPrint (DEBUG_INFO, "DpPhyPowerOn!!!\n");
+    if (EFI_ERROR (Status)) {
+      DebugPrint (
+        DEBUG_ERROR,
+        "%a: Typec phy %d, DP Phy Power On %r\n",
+        __FUNCTION__,
+        TypcPhyIdx,
+        Status
+        );
+    }
+    Status = TypecPhy->DpPhyConfigure (TypecPhy);
+    DebugPrint (DEBUG_INFO, "DpPhyConfigure!!!\n");
+    if (EFI_ERROR (Status)) {
+      DebugPrint (
+        DEBUG_ERROR,
+        "%a: Typec phy %d, DP Phy Configure %r\n",
         __FUNCTION__,
         TypcPhyIdx,
         Status
         );
     }
   } else {
-    Status = TypecPhy->U3phyExit (TypecPhy);
+    Status = TypecPhy->DpPhyPowerOff (TypecPhy);
+    DebugPrint (DEBUG_INFO, "DpPhyPowerOff!!!\n");
     if (EFI_ERROR (Status)) {
       DebugPrint (
         DEBUG_ERROR,
-        "%a: Typec phy %d, U3 Phy Exit %r\n",
+        "%a: Typec phy %d, DP Phy Power Off %r\n",
         __FUNCTION__,
         TypcPhyIdx,
         Status
@@ -69,11 +92,11 @@ TypecPhyTimerCallback (
     }
   }
 
-  DEBUG ((
+  DebugPrint (
     DEBUG_INFO,
     "[Typec phy %d timer callback exit]\n\n\n",
     TypcPhyIdx
-    ));
+    );
 
   FreePool(Context);
 
@@ -93,13 +116,13 @@ UpdateTypecPhy (
   UINTN               PhyIndex         = 0;
   TYPEC_PHY_PROTOCOL  *TypecPhy;
 
-  DEBUG ((
+  DebugPrint (
     DEBUG_INFO,
     "Update Typec phy %d, Mode: %a, Orientation: %a\n",
     TypcPhyIdx,
     TypecModeStrs[PortState.Mode],
     TypecOrientationStrs[PortState.Orientation]
-    ));
+    );
 
   Status = gBS->LocateHandleBuffer (
                   ByProtocol,
@@ -127,11 +150,11 @@ UpdateTypecPhy (
 
   if (PhyIndex == PhyCount) {
     // no matched typc phy found
-    DEBUG ((
+    DebugPrint (
       DEBUG_INFO,
       "Typec phy %d is not supported\n",
       TypcPhyIdx
-      ));
+      );
     Status = EFI_UNSUPPORTED;
     goto exit;
   }
@@ -164,6 +187,8 @@ UpdateTypecPhy (
     goto exit;
   }
 
+  DebugPrint (DEBUG_INFO, "ReadyForIrq %d\n", ReadyForIrq);
+  DebugPrint (DEBUG_INFO, "TRUE is %d\n", TRUE);
   if (ReadyForIrq) {
     EFI_EVENT       TimerEvent;
     TYPEC_PHY_INFO  *PhyInfo = (TYPEC_PHY_INFO *)AllocatePool (sizeof (TYPEC_PHY_INFO));
@@ -178,12 +203,12 @@ UpdateTypecPhy (
                     &TimerEvent
                     );
     Status = gBS->SetTimer (TimerEvent, TimerRelative, PHY_SWITCH_DELAY_AFTER_PD_UPDATE);
-    DEBUG ((
+    DebugPrint (
       DEBUG_INFO,
       "Typec phy %d create timer callback %r\n",
       TypcPhyIdx,
       Status
-      ));
+      );
   }
 
 exit:
@@ -205,10 +230,10 @@ PdAlertCallBack (
   UINT8           *ConnectedIdx = AlertInfo->ConnectIdxs;
   UINT8           ConnectedCnt  = AlertInfo->ConnectCnt;
 
-  DEBUG ((
+  DebugPrint (
     DEBUG_INFO,
     "\n\n[Pd Alert Interrupt Enter]\n"
-    ));
+    );
 
   for (UINT8 Index = 0; Index < ConnectedCnt; Index++) {
     UINT8        PdDevIdx = ConnectedIdx[Index];
@@ -229,13 +254,13 @@ PdAlertCallBack (
         Status
         );
     } else {
-      DEBUG ((
+      DebugPrint (
         DEBUG_INFO,
         "Update Pd Device %d state, Mode: %a, Orientation: %a\n",
         PdDevIdx,
         TypecModeStrs[PdDev->TypecPortState.Mode],
         TypecOrientationStrs[PdDev->TypecPortState.Orientation]
-        ));
+        );
       UpdateTypecPhy (
         PdDev->PhyControlIndex,
         PdDev->TypecPhyReadyForIRQ,
@@ -258,17 +283,17 @@ PdAlertCallBack (
   } while (RetryCnt < ALERT_PIN_POLL_MAX_COUNT);
 
   if(RetryCnt == ALERT_PIN_POLL_MAX_COUNT) {
-    DEBUG ((
+    DebugPrint (
         DEBUG_INFO,
         "Pd alert interrupt (gpio [%d]) not cleared in time\n",
         AlertInfo->AlertPin
-        ));
+        );
   }
 
-  DEBUG ((
+  DebugPrint (
     DEBUG_INFO,
     "[Pd Alert Interrupt Exit]\n\n\n"
-    ));
+    );
 }
 
 VOID
@@ -385,6 +410,8 @@ SetPhyReadyForAlertIRQ (
     return EFI_UNSUPPORTED;
   }
 
+//  gBS->Stall(10000000);
+  DebugPrint (DEBUG_INFO, "SetPhyReadyForAlertIRQ!!!\n");
   mPdDevList[PdDevIndex].TypecPhyReadyForIRQ = TRUE;
 
   return EFI_SUCCESS;
@@ -429,16 +456,16 @@ RegisterAlertTimerCallback (
 
   SortEnabledAlertPin (mPdDevList, mPdDevCnt, &EnabledPins, &EnabledCnt);
 
-  DEBUG ((DEBUG_INFO, "Enabled alert pin nums:"));
+  DebugPrint (DEBUG_INFO, "Enabled alert pin nums:");
   if (EnabledCnt) {
     for ( UINT8 i = 0; i < EnabledCnt; i++) {
-      DEBUG ((DEBUG_INFO, " %d", EnabledPins[i]));
+      DebugPrint (DEBUG_INFO, " %d", EnabledPins[i]);
     }
   } else {
-    DEBUG ((DEBUG_INFO, " not found"));
+    DebugPrint (DEBUG_INFO, " not found");
   }
 
-  DEBUG ((DEBUG_INFO, "\n"));
+  DebugPrint (DEBUG_INFO, "\n");
 
   for (Index = 0; Index < EnabledCnt; Index++) {
     UINT8  *ConnectedIdx;
@@ -446,16 +473,16 @@ RegisterAlertTimerCallback (
 
     CollectConnectedDeviceIndex (mPdDevList, mPdDevCnt, EnabledPins[Index], &ConnectedIdx, &ConnectedCnt);
 
-    DEBUG ((DEBUG_INFO, "Alert Pin Num %d connected pd device indexes:", EnabledPins[Index]));
+    DebugPrint (DEBUG_INFO, "Alert Pin Num %d connected pd device indexes:", EnabledPins[Index]);
     if (ConnectedCnt) {
       for (UINT8 i = 0; i < ConnectedCnt; i++) {
-        DEBUG ((DEBUG_INFO, " %d", ConnectedIdx[i]));
+        DebugPrint (DEBUG_INFO, " %d", ConnectedIdx[i]);
       }
     } else {
-      DEBUG ((DEBUG_INFO, " not found"));
+      DebugPrint (DEBUG_INFO, " not found");
     }
 
-    DEBUG ((DEBUG_INFO, "\n"));
+    DebugPrint (DEBUG_INFO, "\n");
 
     if (ConnectedCnt > 0) {
       EFI_EVENT TimerEvent;
@@ -472,7 +499,7 @@ RegisterAlertTimerCallback (
                     &TimerEvent
                     );
       Status = gBS->SetTimer (TimerEvent, TimerRelative, ALERT_TIMER_CALLBACK_INTERVAL);
-      DEBUG ((DEBUG_INFO, "%a: register alert pin num %d pd timer callback status: %r\n", __FUNCTION__, EnabledPins[Index], Status));
+      DebugPrint (DEBUG_INFO, "%a: register alert pin num %d pd timer callback status: %r\n", __FUNCTION__, EnabledPins[Index], Status);
     }
   }
 
@@ -505,9 +532,11 @@ PdDxeEntryPoint (
   UINT8       *pTpyecDftModes        = PcdGetPtr (PcdTypecPortDefaultModes);
   UINT8       *pTpyecDftOrientations = PcdGetPtr (PcdTypecPortDefaultOrientations);
 
+//  gBS->Stall(10000000);
   POST_CODE (PdDxeStart);
 
   mPdDevCnt  = PcdGet8 (PcdPdDevCount);
+  DebugPrint (DEBUG_INFO, "PdDevCnt is %d\n", mPdDevCnt);
   mPdDevList = (PD_DEV_INFO *)AllocatePool (mPdDevCnt * sizeof (PD_DEV_INFO));
 
   for (UINT8 PdDevIdx = 0; PdDevIdx < mPdDevCnt; PdDevIdx++) {
@@ -524,11 +553,11 @@ PdDxeEntryPoint (
                  &PdDev->TypecPortState
                  );
       if (EFI_ERROR (Status)) {
-        DEBUG ((
+        DebugPrint (
           DEBUG_INFO,
           "Pd Device %d update port state fail, set default state\n",
           PdDevIdx
-          ));
+          );
 
         // get port state fail, set default state
         PdDev->TypecPortState.Mode        = pTpyecDftModes[PdDevIdx];
@@ -536,11 +565,11 @@ PdDxeEntryPoint (
       }
     } else {
       // pd device is invalid
-      DEBUG ((
+      DebugPrint (
         DEBUG_INFO,
         "Pd Device %d is invalid, set default state\n",
         PdDevIdx
-        ));
+        );
 
       // no pd device connected
       PdDev->TypecPortState.Mode        = pTpyecDftModes[PdDevIdx];
@@ -589,6 +618,7 @@ PdDxeEntryPoint (
      return Status;
   }
 
+//  gBS->Stall(10000000);
   POST_CODE (PdDxeEnd);
 
   return EFI_SUCCESS;
