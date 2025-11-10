@@ -335,7 +335,7 @@
   gCixTokenSpaceGuid.PcdI2c4En|FALSE            # 40-pin
   gCixTokenSpaceGuid.PcdI2c4Runtime|FALSE
   gCixTokenSpaceGuid.PcdI2c4BusFreq|100000
-  gCixTokenSpaceGuid.PcdI2c5En|TRUE             # PD Charge
+  gCixTokenSpaceGuid.PcdI2c5En|FALSE             # PD Charge
   gCixTokenSpaceGuid.PcdI2c5Runtime|FALSE
   gCixTokenSpaceGuid.PcdI2c5BusFreq|100000
   gCixTokenSpaceGuid.PcdI2c6En|FALSE            # Board ID
@@ -348,12 +348,12 @@
   # RTC I2C canot be controlled in setup
   gCixTokenSpaceGuid.PcdI2cCtrlEn|0xF7
 
-  gCixPlatformTokenSpaceGuid.PcdPdDevI2cBuses|{ 5, 0xFF, 0xFF, 0xFF }
-  gCixPlatformTokenSpaceGuid.PcdPdDevI2cSlaveAddresses|{ 0x51, 0xFF, 0xFF, 0xFF }
-  gCixPlatformTokenSpaceGuid.PcdPdDevAlertPins|{ 9, 0xFF, 0xFF, 0xFF }
-  gCixPlatformTokenSpaceGuid.PcdTypecPortDefaultModes|{ 3, 4, 1, 4}
-  gRadxaTokenSpaceGuid.PcdPdDevEcI2cBuses|{ 7, 0xFF, 0xFF, 0xFF }
-  gRadxaTokenSpaceGuid.PcdPdDevEcI2cSlaveAddresses|{ 0x72, 0xFF, 0xFF, 0xFF }
+  gCixPlatformTokenSpaceGuid.PcdPdDevI2cBuses|{ 0xFF, 0xFF, 0xFF, 0xFF }
+  gCixPlatformTokenSpaceGuid.PcdPdDevI2cSlaveAddresses|{ 0xFF, 0xFF, 0xFF, 0xFF }
+  gCixPlatformTokenSpaceGuid.PcdPdDevAlertPins|{ 0xFF, 0xFF, 0xFF, 0xFF }
+  gCixPlatformTokenSpaceGuid.PcdTypecPortDefaultModes|{ 4, 4, 1, 4}
+  gRadxaTokenSpaceGuid.PcdPdDevEcI2cBuses|{ 0xFF, 0xFF, 0xFF, 0xFF }
+  gRadxaTokenSpaceGuid.PcdPdDevEcI2cSlaveAddresses|{ 0xFF, 0xFF, 0xFF, 0xFF }
 
   # USBC0
   gCixTokenSpaceGuid.PcdUsbCDrdControl0Enable|TRUE
