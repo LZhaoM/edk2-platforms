@@ -73,9 +73,7 @@ External (\_SB.PRC4, DeviceObj)
     Name (RSM, Package () {
       ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
       Package () {
-        Package () { "regulator-on-in-suspend", 1 },
-        Package () { "regulator-suspend-min-microvolt", 3300000 },
-        Package () { "regulator-suspend-max-microvolt", 3300000 },
+        Package () { "regulator-off-in-suspend", 1 },
       }
     })
   }
