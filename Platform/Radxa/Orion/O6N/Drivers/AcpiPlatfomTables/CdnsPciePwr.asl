@@ -63,6 +63,19 @@ External (\_SB.PRC4, DeviceObj)
         Package () { "regulator-pull-down", 1 },
         Package () { "enable-active-high", 1 },
         Package () { "off-on-delay-us", 15000 },
+      },
+      ToUUID("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
+      Package () {
+        Package () {"regulator-state-mem", "RSM"},
+      }
+    })
+
+    Name (RSM, Package () {
+      ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+      Package () {
+        Package () { "regulator-on-in-suspend", 1 },
+        Package () { "regulator-suspend-min-microvolt", 3300000 },
+        Package () { "regulator-suspend-max-microvolt", 3300000 },
       }
     })
   }
