@@ -383,7 +383,7 @@
   gCixTokenSpaceGuid.PcdIspCamera3Power|0x00
 
   gCixPlatformTokenSpaceGuid.PcdEcAcpiI2cEn|TRUE
-  gCixPlatformTokenSpaceGuid.PcdAcpiGpio0IoMask|0x20000000 # vbus for usb port6-7
+  gCixPlatformTokenSpaceGuid.PcdAcpiGpio0IoMask|0xE0000000 # vbus for usb port6-7
   gCixPlatformTokenSpaceGuid.PcdAcpiGpio3IoMask|0x00018000 # pwm/edp en pin output
 
 # Platform specific defaults
