@@ -27,7 +27,7 @@ MEM_CONFIG_BLOCK_FEATURE MemFeatureBlock = {
     .AddressMode      = 0,
     .WrLEcc           = 0,
     .RdLEcc           = 0,
-    .IEcc             = 0,
+    .IEcc             = 1,
 // DBG feature
     .BpEn             = 0,
     .MbistEn          = 0,
