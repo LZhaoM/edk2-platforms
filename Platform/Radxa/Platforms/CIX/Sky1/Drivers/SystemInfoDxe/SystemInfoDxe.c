@@ -81,8 +81,14 @@ Decode4BitMemType (
     case 0:
       pFmtStr = "4 GiB";
       break;
+    case 1:
+      pFmtStr = "4 GiB (Hynix)";
+      break;
     case 2:
       pFmtStr = "2 GiB";
+      break;
+    case 3:
+      pFmtStr = "12 GiB (Hynix)";
       break;
     case 5:
       pFmtStr = "3 GiB";
@@ -342,6 +348,11 @@ InitializeHardwareInfo (
   AsciiSPrint ((CHAR8 *)DateBuf, sizeof (DateBuf), "%d GiB", pCixSocInfoProtocol->MemInfo->TotalSize/1024);
   AsciiToUnicode (DateBuf, NewString);
   HiiSetString (HiiHandle, STRING_TOKEN (STR_MEMORY_SIZE_VALUE), NewString, NULL);
+
+  // Double Data Rate so we x2 the frequency
+  AsciiSPrint ((CHAR8 *)DateBuf, sizeof (DateBuf), "%d MT/s", pCixSocInfoProtocol->MemInfo->MaxFreq * 2);
+  AsciiToUnicode (DateBuf, NewString);
+  HiiSetString (HiiHandle, STRING_TOKEN (STR_MEMORY_FREQ_VALUE), NewString, NULL);
 
   if (FixedPcdGetBool (PcdEcAcpiI2cEn)) {
     InitializeHardwareInfoWithEC (HiiHandle);

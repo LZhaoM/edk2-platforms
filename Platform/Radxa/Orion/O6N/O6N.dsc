@@ -309,11 +309,11 @@
   gCixTokenSpaceGuid.PcdPcieRootPort2LaneNum|0x01
   gCixTokenSpaceGuid.PcdPcieRootPort3LaneNum|0x00
   gCixTokenSpaceGuid.PcdPcieRootPort4LaneNum|0x00
-  gCixTokenSpaceGuid.PcdPcieRootPort0AspmSupport|0
+  gCixTokenSpaceGuid.PcdPcieRootPort0AspmSupport|3
   gCixTokenSpaceGuid.PcdPcieRootPort1AspmSupport|3
   gCixTokenSpaceGuid.PcdPcieRootPort2AspmSupport|3
-  gCixTokenSpaceGuid.PcdPcieRootPort3AspmSupport|0
-  gCixTokenSpaceGuid.PcdPcieRootPort4AspmSupport|0
+  gCixTokenSpaceGuid.PcdPcieRootPort3AspmSupport|3
+  gCixTokenSpaceGuid.PcdPcieRootPort4AspmSupport|3
   gCixTokenSpaceGuid.PcdPcieRootPort0PeResetPin|2
   gCixTokenSpaceGuid.PcdPcieRootPort1PeResetPin|4
   gCixTokenSpaceGuid.PcdPcieRootPort2PeResetPin|5
@@ -403,8 +403,10 @@
   gCixTokenSpaceGuid.PcdIspCamera2Power|0x00
   gCixTokenSpaceGuid.PcdIspCamera3Power|0x00
 
-  gCixPlatformTokenSpaceGuid.PcdAcpiGpio3IoMask|0x00018000 # DP2_DIGON & DP2_BLON
-  gCixPlatformTokenSpaceGuid.PcdAcpiGpio4IoMask|0x00002000 # UFS_5V_EN
+  # DP2_DIGON & DP2_BLON
+  gCixPlatformTokenSpaceGuid.PcdAcpiGpio3IoMask|0x00018000
+  # UFS_5V_EN & USB_DRIVE_VBUS0 & USB_DRIVE_VBUS4 & USB_DRIVE_VBUS5 & PD_RESET
+  gCixPlatformTokenSpaceGuid.PcdAcpiGpio4IoMask|0xE0002040
 
 # Platform specific defaults
   # Set SMBIOS product name

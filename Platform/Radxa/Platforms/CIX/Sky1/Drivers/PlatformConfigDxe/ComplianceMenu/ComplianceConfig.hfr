@@ -10,8 +10,6 @@ form formid = COMPLIANCE_CONFIG_FORM_ID,
   title  = STRING_TOKEN(STR_COMPLIANCE_FORM_SET_TITLE);
   subtitle text = STRING_TOKEN(STR_EMPTY_STRING);
 
-  subtitle text = STRING_TOKEN(STR_COMPLIANCE_GENERAL);
-
   checkbox varid = NetworkStackVar.Enable,
     questionid = KEY_ENABLE_NETWORK_STACK,
     prompt = STRING_TOKEN(STR_COMPLIANCE_NETWORK_STACK),
@@ -22,7 +20,8 @@ form formid = COMPLIANCE_CONFIG_FORM_ID,
   checkbox varid = DtAcpiPref.Pref,
     prompt = STRING_TOKEN(STR_COMPLIANCE_ACPI),
     help   = STRING_TOKEN(STR_COMPLIANCE_ACPI_HELP),
-    flags  = RESET_REQUIRED,
+    flags  = CHECKBOX_DEFAULT | RESET_REQUIRED,
+    default = TRUE,
   endcheckbox;
 
 suppressif ideqval DtAcpiPref.Pref == DT_ACPI_SELECT_DT;
@@ -30,6 +29,13 @@ suppressif ideqval DtAcpiPref.Pref == DT_ACPI_SELECT_DT;
     prompt = STRING_TOKEN(STR_COMPLIANCE_ACPI_SPCR),
     help   = STRING_TOKEN(STR_COMPLIANCE_ACPI_SPCR_HELP),
     flags  = RESET_REQUIRED,
+  endcheckbox;
+
+  checkbox varid = ComplianceVar.EnableLPI0,
+    questionid = KEY_ENABLE_ACPI_LPI0,
+    prompt = STRING_TOKEN(STR_COMPLIANCE_ACPI_LPI0),
+    help   = STRING_TOKEN(STR_COMPLIANCE_ACPI_LPI0_HELP),
+    flags  = INTERACTIVE | RESET_REQUIRED,
   endcheckbox;
 
   checkbox varid = ComplianceVar.DisableCPPC,
@@ -45,6 +51,10 @@ suppressif ideqval DtAcpiPref.Pref == DT_ACPI_SELECT_DT;
     help   = STRING_TOKEN(STR_COMPLIANCE_DISABLE_SMALL_CORE_HELP),
     flags  = INTERACTIVE | RESET_REQUIRED,
   endcheckbox;
+
+  subtitle text = STRING_TOKEN(STR_EMPTY_STRING);
+  subtitle text = STRING_TOKEN(STR_COMPLIANCE_VENTOY_WARNING);
+
 endif;
 suppressif ideqval DtAcpiPref.Pref == DT_ACPI_SELECT_ACPI;
     text
